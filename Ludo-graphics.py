@@ -8,7 +8,7 @@ RED    = (255,48,48)
 GREEN  = ( 0 , 255,  0 )
 BLUE   = ( 187 ,  255 , 255)
 YELLOW = (255, 255,  0 )
-PINK = (255, 187, 255)
+PINK   = (255, 187, 255)
 
 
 
@@ -95,7 +95,7 @@ x = [x[0] for x in test_pos]
 y = [x[1] for x in test_pos]
 #print(x)
 #print(y)
-pygame.draw.rect(backgound, RED,    pygame.Rect(193,  46, 10, 10))
+pygame.draw.rect(backgound, RED, pygame.Rect(193,  46, 10, 10))
 move = 0
 
 while sair:
@@ -107,13 +107,13 @@ while sair:
                 print(event)
                 if move < 51:
                     move += 1
-                    pygame.draw.rect(backgound, WHITE, [x[51], y[51], 10, 10])
+                    pygame.draw.rect(backgound, WHITE, [  x[51]  ,   y[51]  , 10, 10])
                     pygame.draw.rect(backgound, WHITE, [x[move-1], y[move-1], 10, 10])
-                    pygame.draw.rect(backgound, RED, [x[move], y[move], 10, 10])
+                    pygame.draw.rect(backgound,  RED , [ x[move] ,  y[move] , 10, 10])
                 else:
-                    pygame.draw.rect(backgound, WHITE, [x[51], y[51], 10, 10])
+                    pygame.draw.rect(backgound, WHITE, [  x[51]  ,   y[51]  , 10, 10])
                     move = 0
-                    pygame.draw.rect(backgound, RED, [x[move], y[move], 10, 10])
+                    pygame.draw.rect(backgound,  RED , [ x[move] ,  y[move] , 10, 10])
 
     pygame.display.update()
     
