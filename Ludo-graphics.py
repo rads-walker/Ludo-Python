@@ -1,7 +1,9 @@
 import pygame
 import numpy as np
 
-#definition of terms
+from random import randint
+
+#Definicao de termos
 WHITE  = (255, 255, 255)
 BLACK  = (0  ,  0 ,  0 )
 RED    = (255,48,48)
@@ -13,7 +15,6 @@ PINK   = (255, 187, 255)
 
 
 def getPos():
-    s = (15,15)
     vet_pinta = np.zeros((15,15),dtype='i,i')
     vet_pos   = np.zeros((15,15),dtype='i,i')
     c = 0
@@ -60,9 +61,12 @@ def drawBoard():
     while k < 9:
         pygame.draw.rect(backgound, PINK, pygame.Rect(x[k], y[k], 20, 20))
         k += 1
-            
-
-
+    pygame.draw.rect(backgound, BLACK, pygame.Rect(368, 19, 200, 316), 2)
+    
+    
+    pygame.draw.line(backgound, BLACK, [368,167] ,[567 ,167], 2)   # linha cima 
+    pygame.draw.line(backgound, BLACK, [368,230] ,[567 ,230], 2)   # linha cima
+    #pygame.draw.rect(backgound, (244,244,244), pygame.Rect(370, 169, 197, 61))
 
 
 
@@ -74,16 +78,13 @@ pygame.draw.rect(backgound, RED,    pygame.Rect(151, 25, 10, 10))
 '''
 
 
-
-
-
 try:
     pygame.init()
 except:
     print("Não inicializou corretamente")
     
 #Initialize the Windows
-backgound = pygame.display.set_mode((400,400))
+backgound = pygame.display.set_mode((600,380))
 #Set the Name
 pygame.display.set_caption("Ludo")
 sair = True
@@ -98,13 +99,42 @@ y = [x[1] for x in test_pos]
 pygame.draw.rect(backgound, RED, pygame.Rect(193,  46, 10, 10))
 move = 0
 
+mouse = pygame.mouse.get_pos()
+print(mouse)
+
 while sair:
+    mouse = pygame.mouse.get_pos()
+    #print(mouse)
+    
+
     for event in pygame.event.get():
+    
+        if  567 > mouse[0] > 370 and 230 > mouse[1] > 169:
+            
+            pygame.draw.rect(backgound, GREEN, (370, 169, 197, 61))
+            
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pygame.draw.rect(backgound, RED, (370, 169, 197, 61))
+                dice = randint(1,6)
+                
+                pygame.draw.rect(backgound, WHITE, [ x[move], y[move], 10, 10])
+                
+                move += dice
+                if move < 51:
+                    pygame.draw.rect(backgound,  RED , [ x[move] ,  y[move] , 10, 10])
+                else:
+                    move -= 51
+                    pygame.draw.rect(backgound,  RED , [ x[move] ,  y[move] , 10, 10])
+                
+                print(dice,move)
+        else:
+            pygame.draw.rect(backgound, (244,244,244), (370, 169, 197, 61))
+        
         if event.type == pygame.QUIT:
             sair = False
         if event.type == pygame.KEYDOWN:
+            #print(event)
             if event.key == pygame.K_LEFT:
-                print(event)
                 if move < 51:
                     move += 1
                     pygame.draw.rect(backgound, WHITE, [  x[51]  ,   y[51]  , 10, 10])
@@ -114,8 +144,7 @@ while sair:
                     pygame.draw.rect(backgound, WHITE, [  x[51]  ,   y[51]  , 10, 10])
                     move = 0
                     pygame.draw.rect(backgound,  RED , [ x[move] ,  y[move] , 10, 10])
+    pygame.display.update()    
 
-    pygame.display.update()
-    
-    
+
 pygame.quit()
