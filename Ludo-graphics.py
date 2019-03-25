@@ -1,10 +1,12 @@
+#!/usr/bin/env python
+# coding: utf-8
 import pygame
 import numpy as np
 from random import randint
 
 
+
 #inicializar otdos os modulos do pygame
-#para especificos usar
 try:
     pygame.init()
 except:
@@ -12,7 +14,8 @@ except:
 
 
 
-#Definicao de termos
+'''        Definicao de Variaveis               '''
+# Definicao de termos[5]:
 WHITE  = (255, 255, 255)
 BLACK  = (0  ,  0 ,  0 )
 RED    = (255,48,48)
@@ -21,46 +24,42 @@ BLUE   = ( 187 ,  255 , 255)
 YELLOW = (255, 255,  0 )
 PINK   = (255, 187, 255)
 
-#Recupera as posicoes x e y da matriz desenhada na tela
-def getPos():
-    #Vetor de posicoes para desenha todo o quadrado da malha
-    vet_pinta = np.zeros((15,15),dtype='i,i')
-    #Vetor de posicoes para desenha a peça na malha
-    vet_pos   = np.zeros((15,15),dtype='i,i')
-    c = 0
-    l = 0
-    #Loop em todas as posicoes
-    while c < 15:
-        l = 0
-        while l < 15:
-            x  = 20+(l*20+l)
-            x1 = 25+(l*20+l)
-            y  = 20+(c*20+c)
-            y1 = 25+(c*20+c)
-            vet_pinta[l,c] = (y,x)
-            vet_pos[l,c] = (y1,x1)
-            #Desenha na tela
-            pygame.draw.rect(backgound, (218, 165, 32), pygame.Rect(x , y , 20, 20))
-            pygame.draw.rect(backgound,  RED  , pygame.Rect(x1, y1, 10, 10))
-            l += 1
-        c += 1
-        
-def freeCowries(dice, x, jogadores, tabuleiro):
-    if(dice == 1 or dice == 6) and (jogadores[x,0] < 3):
-        jogadores[x,0] += 1
-        return True
-    return False
+tab_possiveis = [(193,  46),(193,  67),(193,  88),(193, 109),(193, 130),(214, 151),(235, 151),(256, 151),(277, 151),(298, 151),(319, 151),(319, 172),(319, 193),(298, 193),(277, 193),(256, 193),(235, 193),(214, 193),(193, 214),(193, 235),(193, 256),(193, 277),(193, 298),(193, 319),(172, 319),(151, 319),(151, 298),(151, 277),(151, 256),(151, 235),(151, 214),(130, 193),(109, 193),( 88, 193),( 67, 193),( 46, 193),( 25, 193),( 25, 172),( 25, 151),( 46, 151),( 67, 151),( 88, 151),(109, 151),(130, 151),(151, 130),(151, 109),(151,  88),(151,  67),(151,  46),(151,  25),(172,  25),(193,  25)]
+tab_possiveis_x = [x[0] for x in tab_possiveis]
+tab_possiveis_y = [x[1] for x in tab_possiveis]
+
+pecas_jogar = [(388,277),(438,277),(483,277),(538,277)]
+pos_red = [(172, 46)]
+pos_green = [(235,46),(235,109),(298,109),(298,46)]
 
 
-#funcao de texto
-def text(msg, cor, pos, size):
-    #Define a fonte
-    fonte = pygame.font.SysFont(None,size)    
-    #Define texto
-    texto = fonte.render(msg, False, cor)
-    #Desenha
-    backgound.blit(texto, pos)
 
+sair = True
+
+move = 0
+
+mouse = pygame.mouse.get_pos()
+
+# qts pecas - pecas
+#player = [-1,-1,-1,-1,-1]
+players = np.zeros((4,5), dtype=int)
+players.fill(-1)
+data = [(RED, 0, 50),(GREEN, 13, 11),(YELLOW, 26, 24),(BLUE, 35, 33)]
+base = [(235, 46), (235, 235), (46, 235), (46, 46)]
+safe = [(172, 46), (214, 172), (172, 214), (25, 172)]
+
+print(data)
+
+tabuleiro = np.zeros((54), dtype=int)
+#jogador atual
+player = 0
+
+
+
+
+'''                          Definicao de Funcoes                                 '''
+
+#Desenha o quadro do jogo
 def drawBoard():
     #Pinta o fundo
     backgound.fill(WHITE)
@@ -89,62 +88,136 @@ def drawBoard():
     k = 0
     while k < 9:
         pygame.draw.rect(backgound, PINK, pygame.Rect(x[k], y[k], 20, 20))
-        k += 1
-        
+        k += 1  
     #segundo bloco    
     pygame.draw.rect(backgound, BLACK, pygame.Rect(368, 19, 200, 316), 2)
     #linhas horizontais
     pygame.draw.line(backgound, BLACK, [368,167] ,[567 ,167], 2)
     pygame.draw.line(backgound, BLACK, [368,230] ,[567 ,230], 2)
-    #peças possiveis
+    #peças para jogar
     pygame.draw.rect(backgound, RED, pygame.Rect(388,  277, 20, 20))
     pygame.draw.rect(backgound, RED, pygame.Rect(438,  277, 20, 20))
     pygame.draw.rect(backgound, RED, pygame.Rect(483,  277, 20, 20))
     pygame.draw.rect(backgound, RED, pygame.Rect(538,  277, 20, 20))
-
     #AMARELO
     pygame.draw.rect(backgound, RED, pygame.Rect(46,   46, 10, 10))
     pygame.draw.rect(backgound, RED, pygame.Rect(109,  46, 10, 10))
     pygame.draw.rect(backgound, RED, pygame.Rect(46, 109, 10, 10))
     pygame.draw.rect(backgound, RED, pygame.Rect(109,  109, 10, 10))
-    
-    #AZUL
+    #vermelho
     pygame.draw.rect(backgound, RED, pygame.Rect(235,  46, 10, 10))
     pygame.draw.rect(backgound, RED, pygame.Rect(235, 109, 10, 10))
     pygame.draw.rect(backgound, RED, pygame.Rect(298, 109, 10, 10))
     pygame.draw.rect(backgound, RED, pygame.Rect(298,  46, 10, 10))
-    
     #VERDE
     pygame.draw.rect(backgound, RED, pygame.Rect(46,  235, 10, 10))
     pygame.draw.rect(backgound, RED, pygame.Rect(109, 235, 10, 10))
     pygame.draw.rect(backgound, RED, pygame.Rect(46, 298, 10, 10))
     pygame.draw.rect(backgound, RED, pygame.Rect(109,  298, 10, 10))
-    
     #AZUL
     pygame.draw.rect(backgound, BLUE, pygame.Rect(235,  235, 10, 10))
     pygame.draw.rect(backgound, BLUE, pygame.Rect(235, 298, 10, 10))
     pygame.draw.rect(backgound, BLUE, pygame.Rect(298, 298, 10, 10))
     pygame.draw.rect(backgound, BLUE, pygame.Rect(298,  235, 10, 10))
+
+#funcao de texto
+def text(msg, cor, pos, size):
+    #Define a fonte
+    fonte = pygame.font.SysFont(None,size)    
+    #Define texto
+    texto = fonte.render(msg, False, cor)
+    #Desenha
+    backgound.blit(texto, pos)
+
+#checar melhor mensagem
+def checkBestmove(dice, player, players, tabuleiro):
+    if downCowries(dice, player, players, tabuleiro):
+        print("derrubar")
+    elif (dice == 1 or dice == 6) and players[player,0] < 3:
+        print ("Liberar")
+        e = freeCowries(dice, players[player][:], tabuleiro)
+        paint_release(players[player][e], e)
+        return True
+    elif players[player,0] >= 0:
+        freeMove(dice, player, players)
+        print("mover")
+
+#Liberar peça        
+def freeCowries(dice, players, tabuleiro):  
+    players[0] += 1
+    e = 1
+    while e < 5:
+        if players[e] == -1:
+            players[e] = 0
+            break
+        e += 1    
+    paint(GREEN, [pecas_jogar[e-1][0], pecas_jogar[e-1][1]], [20, 20])
+    return e    
+
+
+        
+def freeMove(dice, player, players):
+    e = np.argmax(players[player][1:])+1
+    paint(WHITE, [tab_possiveis_x[players[player][e]], tab_possiveis_y[players[player][e]]] ,[10, 10])
+    #se jogador na pos atual + dado > fim
+    if (players[player][e] + dice) > data[player][2]:
+        #rest recebe a diferenca entre o final e a pos + dice
+        rest = players[player][e] + dice - data[player][2]
+
+        if player == 0:
+            
+            paint(RED, [safe[player][0], safe[player][0] + ((rest - 1) * 21)], [10, 10])
+            players[player][e] = -106 - rest
+        elif player == 1:
+            ex += 63
+        elif player == 2:
+            ey += 63
+        elif player == 3:
+            ex += 63
+            ey =+ 63
+        paint(RED, [safe[player]
+        tab_possiveis_x[players[player][e] + dice], tab_possiveis_y[players[player][e] + dice]] ,[10, 10])
+    else:
+        paint(RED, [tab_possiveis_x[players[player][e] + dice], tab_possiveis_y[players[player][e] + dice]] ,[10, 10])
+        players[player][e] += dice
+    #mais de uma peca na 1° casa
+    if data[player][1] in players[player][1:]:
+        paint(data[player][0], [tab_possiveis_x[data[player][1]], tab_possiveis_y[data[player][1]]], [10, 10])
+    
+def downCowries(dice, x, jogadores, tabuleiro):
+    return False
+
+#pintar de cor uma posição com um tamanho
+def paint(color, pos, tam):
+    pygame.draw.rect(backgound, color, [pos[0], pos[1], tam[0], tam[1]])
+
+def paint_release(peca, e):
+    ex = 0
+    ey = 0
+    if peca == 0:
+        if (e-1) == 1:
+            ex += 63
+        elif (e-1) == 2:
+            ey += 63
+        elif (e-1) == 3:
+            ex += 63
+            ey =+ 63
+        paint(WHITE, [base[player][0] + ex, base[player][1]  + ey], [10, 10])
+        paint(data[player][0], [tab_possiveis_x[data[player][1]], tab_possiveis_y[data[player][1]]], [10, 10])
+
+    #set(tabuleiro)
     
 #Initialize the Windows
 backgound = pygame.display.set_mode((600,380))
 #Set the Name
 pygame.display.set_caption("Ludo")
-sair = True
 #Draw the Board
 drawBoard()
 
-test_pos = [(193,  46),(193,  67),(193,  88),(193, 109),(193, 130),(214, 151),(235, 151),(256, 151),(277, 151),(298, 151),(319, 151),(319, 172),(319, 193),(298, 193),(277, 193),(256, 193),(235, 193),(214, 193),(193, 214),(193, 235),(193, 256),(193, 277),(193, 298),(193, 319),(172, 319),(151, 319),(151, 298),(151, 277),(151, 256),(151, 235),(151, 214),(130, 193),(109, 193),( 88, 193),( 67, 193),( 46, 193),( 25, 193),( 25, 172),( 25, 151),( 46, 151),( 67, 151),( 88, 151),(109, 151),(130, 151),(151, 130),(151, 109),(151,  88),(151,  67),(151,  46),(151,  25),(172,  25),(193,  25)]
-x = [x[0] for x in test_pos]
-y = [x[1] for x in test_pos]
-#print(x)
-#print(y)
 
 
-move = 0
 
-mouse = pygame.mouse.get_pos()
-print(mouse)
+
 
 while sair:
     mouse = pygame.mouse.get_pos()
@@ -153,46 +226,38 @@ while sair:
 
     for event in pygame.event.get():
         #print(event)
+        #posicao do botao na tela
         if  567 > mouse[0] > 370 and 230 > mouse[1] > 169:
-            #pygame.draw.rect(backgound, GREEN, (370, 169, 197, 61))
+            #verificar clique na tela
             if event.type == pygame.MOUSEBUTTONDOWN:
                 #respota ao clique
-                pygame.draw.rect(backgound, RED, (370, 169, 197, 61))
-                dice = randint(1,6)
-                #apagar numero
-                pygame.draw.rect(backgound, WHITE, pygame.Rect(370, 21, 197, 146))
-                
+                paint(RED,[370,169],[197,61])           
+                #Rolar o dado
+                dice = randint(1,6)       
+                #apagar numero do dado anterior
+                paint(WHITE,[370,21],[197,146])
                 #imprimir texto na tela
                 text(str(dice), BLACK,  [453,65], 100)
+                 
+                checkBestmove(dice, player, players, tabuleiro)
                 
-                #apagar a peça
-                pygame.draw.rect(backgound, WHITE, [ x[move], y[move], 10, 10])
+#                #apagar a peça
+#                pygame.draw.rect(backgound, WHITE, [ x[move], y[move], 10, 10])
+#
+#               move += dice
+#                #if move < 51:
+#                    #pygame.draw.rect(backgound,  RED , [ x[move] ,  y[move] , 10, 10])
+#                #else:
+#                    #move -= 51
+#                    #pygame.draw.rect(backgound,  RED , [ x[move] ,  y[move] , 10, 10])
+#
+#                print(dice,move)
 
-                move += dice
-                if move < 51:
-                    pygame.draw.rect(backgound,  RED , [ x[move] ,  y[move] , 10, 10])
-                else:
-                    move -= 51
-                    pygame.draw.rect(backgound,  RED , [ x[move] ,  y[move] , 10, 10])
 
-                print(dice,move)
-            else:
-                pygame.draw.rect(backgound, (244,244,244), (370, 169, 197, 61))
-
+        #quit the game
         if event.type == pygame.QUIT:
             sair = False
-        if event.type == pygame.KEYDOWN:
-            #print(event)
-            if event.key == pygame.K_LEFT:
-                if move < 51:
-                    move += 1
-                    pygame.draw.rect(backgound, WHITE, [  x[51]  ,   y[51]  , 10, 10])
-                    pygame.draw.rect(backgound, WHITE, [x[move-1], y[move-1], 10, 10])
-                    pygame.draw.rect(backgound,  RED , [ x[move] ,  y[move] , 10, 10])
-                else:
-                    pygame.draw.rect(backgound, WHITE, [  x[51]  ,   y[51]  , 10, 10])
-                    move = 0
-                    pygame.draw.rect(backgound,  RED , [ x[move] ,  y[move] , 10, 10])
+    #atualizar a tela
     pygame.display.update()
 
 
