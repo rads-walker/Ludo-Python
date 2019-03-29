@@ -12,6 +12,15 @@ try:
 except:
     print("Não inicializou corretamente")
 
+'''        Testes para ver se ganha xdxd               '''
+
+
+dice = [6, 50, 6, 6, 6, 6, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+         , 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+         , 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+         , 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+
+
 
 
 '''        Definicao de Variaveis               '''
@@ -59,7 +68,7 @@ data = [(RED, 0, 50),
 base = [(235, 46), (235, 235), (46, 235), (46, 46)]
 safe = [(172, 46), (298, 172), (172, 298), (25, 172)]
 
-print(data)
+#print(data)
 
 tabuleiro = np.zeros((54), dtype=int)
 #jogador atual
@@ -155,6 +164,7 @@ def text(msg, cor, pos, size):
 
 #checar melhor mensagem
 def checkBestmove(dice, player, players, tabuleiro):
+    #print("peca", players[player][0], " ", "safes", check[player][0])
     if downCowries(dice, player, players, tabuleiro):
         print("derrubar")
     elif (dice == 1 or dice == 6) and players[player][0] < 3:
@@ -162,7 +172,7 @@ def checkBestmove(dice, player, players, tabuleiro):
         e = freeCowries(dice, players[player][:], tabuleiro)
         paint_release(players[player][e], e)
         return True
-    elif players[player,0] >= 0:
+    elif players[player][0] >= 0 and  players[player][0] > check[player][0]:
         freeMove(dice, player, players)
         #print("mover")
 
@@ -199,7 +209,8 @@ def checkLast(pos):
         #retornar a primeira
         #correcao para valor 0 qe e == false
         e[0] += 1
-        return e
+        #print (e)
+        return e[0]
     else:
         return False
     
@@ -221,7 +232,7 @@ def freeMove(dice, player, players):
     #se tem peca na safe
     checksafe = checkSafe()
     #se esta na ultima posicao e tira 6 == win
-    checklast = checkLast(data[player][1])
+    checklast = checkLast(data[player][2])
     #peca mais distante que n esta na safe -- posicao
     peca = checkBest()
 
@@ -232,7 +243,8 @@ def freeMove(dice, player, players):
         #corrigir posicao
         if player == 0:
             paint((186, 241, 255), [safe[player][0] , safe[player][1] + (players[player][checksafe] * 21) ] ,[10, 10])
-            print (players[player][checksafe])
+            #print (players[player][checksafe])
+            #ganhou safe
             if dice + players[player][checksafe] >= 5:
                 print("deu")
                 paint(RED, [172, 151] ,[10, 10])
@@ -244,15 +256,8 @@ def freeMove(dice, player, players):
                 paint(RED, [safe[player][0] , safe[player][1] + ((players[player][checksafe] + dice) * 21) ] ,[10, 10])
                 players[player][checksafe] += dice
                 
-        elif player == 1:
-            paint(WHITE, [safe[player][1] - (players[player][checksafe] * 21) , safe[player][1]] ,[10, 10])
-            if dice + checksafe > 5:
-                paint(RED, [193, 172] ,[10, 10])
-                check[player][0] += 1
-                check[player][checksafe] = 1
-            else:
-                paint(RED, [safe[player][1] - ((players[player][checksafe] + dice) * 21) , safe[player][1]] ,[10, 10])
-                
+
+    
     #se esta na ultima posicao e tira 6 == win                    
     elif checklast and dice == 6:
         print ("Ultima posicao")
@@ -260,13 +265,15 @@ def freeMove(dice, player, players):
             paint(WHITE, [tab_possiveis_x[players[player][checklast]], tab_possiveis_y[players[player][checklast]]] ,[10, 10])
             paint(RED, [172, 151] ,[10, 10])
             check[player][0] += 1
-            check[player][checksafe] = 1            
+            check[player][checklast] = 1
+            players[player][peca] = 6
             
         elif player == 1:
             paint(WHITE, [tab_possiveis_x[players[player][checklast]], tab_possiveis_y[players[player][checklast]]] ,[10, 10])
             paint(RED, [193, 172] ,[10, 10])
             check[player][0] += 1
-            check[player][checksafe] = 1
+            check[player][checklast] = 1
+            players[player][peca] = 6
             
     #se jogador na pos atual + dado > fim
     elif (players[player][peca] + dice) > data[player][2]:
@@ -276,15 +283,12 @@ def freeMove(dice, player, players):
         paint(WHITE, [tab_possiveis_x[players[player][peca]], tab_possiveis_y[players[player][peca]]] ,[10, 10])
         
         if player == 0:
-            check[player][0] += 1
             check[player][peca] = 0
             paint(RED, [safe[player][0], safe[player][1] + (rest * 21)] ,[10, 10])
             players[player][peca] = rest
-            print (rest)
             #print (check)
             
         elif player == 1:
-            check[player][0] += 1
             check[player][peca] = 0
             paint(RED, [safe[player][0] + (rest * 21), safe[player][1]] ,[10, 10])
             players[player][peca] = rest
@@ -322,7 +326,14 @@ def paint_release(peca, e):
         paint(data[player][0], [tab_possiveis_x[data[player][1]], tab_possiveis_y[data[player][1]]], [10, 10])
 
     #set(tabuleiro)
-    
+
+def checkWin(isWin):
+    if isWin == 3:
+        return True
+    else:
+        return False
+
+
 #Initialize the Windows
 backgound = pygame.display.set_mode((600,380))
 #Set the Name
@@ -334,7 +345,7 @@ drawBoard()
 
 
 
-dice = [6, 40, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+
 a = 0
 while sair:
     mouse = pygame.mouse.get_pos()
@@ -363,9 +374,13 @@ while sair:
                 text(str(dice[a]), BLACK,  [453,65], 100)
                  
                 checkBestmove(dice[a], player, players, tabuleiro)
-
+                #print (players[player][0])
+                if checkWin(check[player][0]):
+                    print("GANHOUs")
+                    break
                 a = a + 1
-                
+                #print (players)
+                #print (check)
 #                #apagar a peça
 #                pygame.draw.rect(backgound, WHITE, [ x[move], y[move], 10, 10])
 #
@@ -384,6 +399,7 @@ while sair:
             sair = False
     #atualizar a tela
     pygame.display.update()
+    
 
 
 pygame.quit()
