@@ -15,10 +15,9 @@ except:
 '''        Testes para ver se ganha xdxd               '''
 
 
-dice = [6, 50, 6, 6, 6, 6, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
-         , 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
-         , 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
-         , 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+dice = [6, 2, 6, 4, 6, 3, 2, 5, 1, 5, 2
+        , 1, 2, 2, 6, 2, 2, 6, 2, 2, 1
+        , 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 
 
 
@@ -41,8 +40,6 @@ pecas_jogar = [(388,277),(438,277),(483,277),(538,277)]
 pos_red = [(172, 46)]
 pos_green = [(235,46),(235,109),(298,109),(298,46)]
 
-
-
 sair = True
 
 move = 0
@@ -51,6 +48,12 @@ mouse = pygame.mouse.get_pos()
 
 # qts pecas - pecas
 #player = [-1,-1,-1,-1,-1]
+'''[pecas fora da base,
+    -1 = peca base
+     * = peca ingame
+    6' = peca ganha
+    ]
+'''
 players = np.zeros((4,5), dtype=int)
 #check   = [-1,-1,-1,-1,-1]
 '''[peça salva,
@@ -73,9 +76,6 @@ safe = [(172, 46), (298, 172), (172, 298), (25, 172)]
 tabuleiro = np.zeros((54), dtype=int)
 #jogador atual
 player = 0
-
-
-
 
 '''                          Definicao de Funcoes                                 '''
 
@@ -148,10 +148,7 @@ def drawBoard():
         pygame.draw.rect(backgound, (186, 241, 255), pygame.Rect(167           , 209 + (21 * e), 20, 20))
         pygame.draw.rect(backgound, (186, 241, 255), pygame.Rect(41  + (21 * e), 167, 20, 20))
 
-
-        e += 1
-    
-    
+        e += 1 
     
 #funcao de texto
 def text(msg, cor, pos, size):
@@ -165,28 +162,28 @@ def text(msg, cor, pos, size):
 #checar melhor mensagem
 def checkBestmove(dice, player, players, tabuleiro):
     #print("peca", players[player][0], " ", "safes", check[player][0])
-    if downCowries(dice, player, players, tabuleiro):
-        print("derrubar")
+    if checkDown(dice):
+        print("derrubou")
     elif (dice == 1 or dice == 6) and players[player][0] < 3:
         #print ("Liberar")
-        e = freeCowries(dice, players[player][:], tabuleiro)
-        paint_release(players[player][e], e)
+        freeCowries()
+        
         return True
     elif players[player][0] >= 0 and  players[player][0] > check[player][0]:
         freeMove(dice, player, players)
         #print("mover")
 
 #Liberar peça        
-def freeCowries(dice, players, tabuleiro):  
-    players[0] += 1
+def freeCowries():
+    players[player][0] += 1
     e = 1
     while e < 5:
-        if players[e] == -1:
-            players[e] = 0
-            break
+        if players[player][e] == -1:
+            players[player][e] = 0
+            paint(GREEN, [pecas_jogar[e-1][0], pecas_jogar[e-1][1]], [20, 20])
+            paint_release(e)
+            return e    
         e += 1    
-    paint(GREEN, [pecas_jogar[e-1][0], pecas_jogar[e-1][1]], [20, 20])
-    return e    
 
 
 def checkSafe():
@@ -257,7 +254,6 @@ def freeMove(dice, player, players):
                 players[player][checksafe] += dice
                 
 
-    
     #se esta na ultima posicao e tira 6 == win                    
     elif checklast and dice == 6:
         print ("Ultima posicao")
@@ -302,19 +298,14 @@ def freeMove(dice, player, players):
     #mais de uma peca na 1° casa
 
 
-
-
-def downCowries(dice, x, jogadores, tabuleiro):
-    return False
-
 #pintar de cor uma posição com um tamanho
 def paint(color, pos, tam):
     pygame.draw.rect(backgound, color, [pos[0], pos[1], tam[0], tam[1]])
 
-def paint_release(peca, e):
+def paint_release(e):
     ex = 0
     ey = 0
-    if peca == 0:
+    if players[player][e] == 0:
         if (e-1) == 1:
             ex += 63
         elif (e-1) == 2:
@@ -325,13 +316,56 @@ def paint_release(peca, e):
         paint(WHITE, [base[player][0] + ex, base[player][1]  + ey], [10, 10])
         paint(data[player][0], [tab_possiveis_x[data[player][1]], tab_possiveis_y[data[player][1]]], [10, 10])
 
-    #set(tabuleiro)
+def paint_lock(e):
+    ex = 0
+    ey = 0
+    if (e-1) == 1:
+        ex += 63
+    elif (e-1) == 2:
+        ey += 63
+    elif (e-1) == 3:
+        ex += 63
+        ey =+ 63
+    paint(RED, [base[player][0] + ex, base[player][1]  + ey], [10, 10])
+
+
+
+
 
 def checkWin(isWin):
     if isWin == 3:
         return True
     else:
         return False
+
+def checkDown(dice):
+    e = 1
+    while e < 5:
+#        print ("peca test", players[player][e], "pos ", e)
+        #se ela estiver na base == -1 ou o check for diferente de ingame != -1
+        if players[player][e] == -1 or check[player][e] == 1 or check[player][e] == 0:
+            e += 1
+        else:
+            f = 0
+            while f < 4:
+                if player != f:
+                    i = 1
+                    while i < 5:
+                        ## peça + dado == outra peca oponente e ta na safe e peca + dado <= fim
+                        if players[f][i] == players[player][e] + dice and check[f][i] == -1 and players[player][e] + dice <= data[player][2]:
+                            paint(WHITE, [tab_possiveis_x[players[player][e]], tab_possiveis_y[players[player][e]]], [10, 10])
+                            paint(data[player][0], [tab_possiveis_x[players[player][e] + (dice * 21)], tab_possiveis_y[players[player][e] + (dice * 21)]], [10, 10])
+                            paint_lock(i)
+                            players[f][i] = -1
+                            players[f][0] = -1
+                            #antiga pinta base, set player  ´ps 0, reduzir em um pos[0]
+                            player[player][e] += dice
+                            #set nerw pos peca 
+                            return True
+                        i += 1
+                f += 1
+            e += 1
+    return False
 
 
 #Initialize the Windows
@@ -340,10 +374,6 @@ backgound = pygame.display.set_mode((600,380))
 pygame.display.set_caption("Ludo")
 #Draw the Board
 drawBoard()
-
-
-
-
 
 
 a = 0
@@ -372,7 +402,8 @@ while sair:
                 '''
                 paint(WHITE,[370,21],[197,146])
                 text(str(dice[a]), BLACK,  [453,65], 100)
-                 
+                
+                
                 checkBestmove(dice[a], player, players, tabuleiro)
                 #print (players[player][0])
                 if checkWin(check[player][0]):
