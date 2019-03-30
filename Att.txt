@@ -29,6 +29,6 @@ Verificar
 Implementar
 + Cores melhor definidas para cada jogador
 + Cores melhor definidas para o tabuleiro
-+ Verificacao de sobreposicao de peca no tabuleiro quando mover uma peca
+/ Verificacao de sobreposicao de peca no tabuleiro quando mover uma peca
 + Gerencia para passar a vez
 + Vencer
