@@ -11,6 +11,10 @@ Implementado:
 - Update pendrive
 - Definir vetores posições variadas
 - Função de pintar
+- Verificacao de sobreposicao de peca no tabuleiro quando mover uma peca
+- Correcao para outras pecas. Fim do tabuleiro e diferente para cada player
+- Gerencia para passar a vez
+- Vencer
 
 Melhoria
 + Adicionar um timer para dar delay na animação das pecas
@@ -22,6 +26,7 @@ Melhoria
 + Mesclar funcoes de checagem
 + Verificar funcoes que podem ser escritas genericamente
 + tab_possiveis_x/_y remover do codigo
++ Texto do dado mudar quando for a maquina
 
 Verificar
 * Funcao de derrubar, ainda nao testada
@@ -29,6 +34,4 @@ Verificar
 Implementar
 + Cores melhor definidas para cada jogador
 + Cores melhor definidas para o tabuleiro
-/ Verificacao de sobreposicao de peca no tabuleiro quando mover uma peca
-+ Gerencia para passar a vez
-+ Vencer
+
