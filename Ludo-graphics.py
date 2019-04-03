@@ -99,7 +99,7 @@ safe = [(172, 46), (298, 172), (172, 298), (46, 172)]
 
 #print(data)
 
-tabuleiro = np.zeros((54), dtype=int)
+
 
 
 '''                          Definicao de Funcoes                                 '''
@@ -134,8 +134,8 @@ def drawBoard():
     k = 0
     while k < 9:
         pygame.draw.rect(backgound, PINK, pygame.Rect(x[k], y[k], 20, 20))
-        k += 1  
-    #segundo bloco    
+        k += 1
+    #segundo bloco
     pygame.draw.rect(backgound, BLACK, pygame.Rect(368, 19, 200, 316), 2)
     #linhas horizontais
     pygame.draw.line(backgound, BLACK, [368,167] ,[567 ,167], 2)
@@ -165,7 +165,7 @@ def drawBoard():
     pygame.draw.rect(backgound, GREEN, pygame.Rect(235, 298, 10, 10))
     pygame.draw.rect(backgound, GREEN, pygame.Rect(298, 298, 10, 10))
     pygame.draw.rect(backgound, GREEN, pygame.Rect(298,  235, 10, 10))
-    
+
     #SAFE RED
     e = 0
     while e < 5:
@@ -174,19 +174,19 @@ def drawBoard():
         pygame.draw.rect(backgound, (186, 241, 255), pygame.Rect(167           , 209 + (21 * e), 20, 20))
         pygame.draw.rect(backgound, (186, 241, 255), pygame.Rect(41  + (21 * e), 167, 20, 20))
 
-        e += 1 
-    
+        e += 1
+
 #funcao de texto
 def text(msg, cor, pos, size):
     #Define a fonte
-    fonte = pygame.font.SysFont(None,size)    
+    fonte = pygame.font.SysFont(None,size)
     #Define texto
     texto = fonte.render(msg, False, cor)
     #Desenha
     backgound.blit(texto, pos)
 
 #checar melhor mensagem
-def checkBestmove(dice, player, players, tabuleiro):
+def checkBestmove(dice, player, players):
     if checkDown(dice):
         print("derrubou -----------------------------------------------------")
     elif (dice == 1 or dice == 6) and players[player][0] < 3:
@@ -197,7 +197,7 @@ def checkBestmove(dice, player, players, tabuleiro):
         freeMove(dice, player, players)
     print(players)
 
-#Liberar peça        
+#Liberar peça
 def freeCowries():
     players[player][0] += 1
     e = 1
@@ -209,8 +209,8 @@ def freeCowries():
             if player == 0:
                 paint(GREEN, [pecas_jogar[e-1][0], pecas_jogar[e-1][1]], [20, 20], 0)
             paint_release(e)
-            return e    
-        e += 1    
+            return e
+        e += 1
 
 
 def checkSafe():
@@ -224,7 +224,7 @@ def checkSafe():
         return e
     else:
         return False
-    
+
 def checkLast(pos):
     #verificar na lista se tem alguma peca na ultima posicao
     if pos in players[player][1:]:
@@ -237,7 +237,7 @@ def checkLast(pos):
         return e[0]
     else:
         return False
-    
+
 def checkBest():
     #Ver o mais mais perto do fim
     maxi = -1
@@ -253,11 +253,11 @@ def checkBest():
                     # estrapolou o fim do player, então tem que haver a correcao de 51 + 1, considerando o 0 + pos da peca
                     aux = players[player][e] + 51 + 1
                 else:
-                    aux = players[player][e]    
+                    aux = players[player][e]
             if aux > maxi:
                 #print (aux, maxi)
                 maxi = aux
-                pos = e    
+                pos = e
         e += 1
     return pos
 
@@ -321,7 +321,7 @@ def freeMove(dice, player, players):
                 #print("Ndeu")
                 paint(RED, [safe[player][0] - ((players[player][checksafe] + dice) * 21)  , safe[player][1]] ,[10, 10], 0)
                 players[player][checksafe] += dice
-                
+
         if player == 2:
             #pinta da cor safe
             paint((186, 241, 255), [safe[player][0], safe[player][1] - (players[player][checksafe] * 21)] ,[10, 10], 0)
@@ -338,7 +338,7 @@ def freeMove(dice, player, players):
                 #print("Ndeu")
                 paint(RED, [safe[player][0], safe[player][1] - ((players[player][checksafe] + dice) * 21)] ,[10, 10], 0)
                 players[player][checksafe] += dice
-                
+
         if player == 3:
             #pinta da cor safe
             paint((186, 241, 255), [safe[player][0] + (players[player][checksafe] * 21) , safe[player][1]] ,[10, 10], 0)
@@ -355,10 +355,10 @@ def freeMove(dice, player, players):
                 #print("Ndeu")
                 paint(RED, [safe[player][0] + ((players[player][checksafe] + dice) * 21)  , safe[player][1]] ,[10, 10], 0)
                 players[player][checksafe] += dice
-                
 
 
-    #se esta na ultima posicao e tira 6 == win                    
+
+    #se esta na ultima posicao e tira 6 == win
     elif checklast and dice == 6:
         #print ("Ultima posicao")
         if player == 0:
@@ -374,30 +374,30 @@ def freeMove(dice, player, players):
             check[player][0] += 1
             check[player][checklast] = 1
             players[player][peca] = -2
-        
+
         if player == 2:
             paint(WHITE, [tab_possiveis[players[player][checklast]][0], tab_possiveis[players[player][checklast]][1]] ,[10, 10], 1)
             paint(data[player][0], [safe[player][0], safe[player][1] - (5 * 21)], [10, 10], 0)
             check[player][0] += 1
             check[player][checklast] = 1
             players[player][peca] = -2
-        
+
         if player == 3:
             paint(WHITE, [tab_possiveis[players[player][checklast]][0], tab_possiveis[players[player][checklast]][1]] ,[10, 10], 1)
             paint(data[player][0], [safe[player][0] + (5 * 21), safe[player][1]], [10, 10], 0)
             check[player][0] += 1
             check[player][checklast] = 1
             players[player][peca] = -2
-        
-            
-       
+
+
+
     #se jogador na pos atual (com correcao) + dado > fim
     elif (pos_peca + dice) > data_fim:
         #print ("Posicao + Dado > fim")
         #rest recebe a diferenca entre o final e a pos + dice - correcao para vetor
         rest = (players[player][peca] + dice) - data[player][2] - 1
         paint(WHITE, [tab_possiveis_x[players[player][peca]], tab_possiveis_y[players[player][peca]]] ,[10, 10], 1)
-        
+
         if player == 0:
             check[player][peca] = 0
             paint(data[player][0], [safe[player][0], safe[player][1] + (rest * 21)] ,[10, 10], 0)
@@ -417,8 +417,8 @@ def freeMove(dice, player, players):
             check[player][peca] = 0
             paint(data[player][0], [safe[player][0] + (rest * 21), safe[player][1]] ,[10, 10], 0)
             players[player][peca] = rest
-            #print (check)            
-                           
+            #print (check)
+
     #mover livremente pelo tabuleiro
     else:
         #print("mover")
@@ -431,25 +431,25 @@ def freeMove(dice, player, players):
                 rest = pos_peca + dice
         else:
             rest = players[player][peca] + dice
-            
+
         paint(data[player][0], [tab_possiveis[rest][0], tab_possiveis[rest][1]] ,[10, 10], 0)
         #paint(RED, [tab_possiveis_x[players[player][peca] + dice], tab_possiveis_y[players[player][peca] + dice]] ,[10, 10], 0)
         players[player][peca] = rest
-        
+
 #pintar de cor uma posição com um tamanho, verificando se e para apagar uma pos, verificação de sobreposição de peças
 #sob - 0 não tem sobreposicao
-#sob - 1 possivel ter sobreposicao   
+#sob - 1 possivel ter sobreposicao
 def paint(color, pos, tam, sob):
     #se existe possibilidade de peça na pos que vai pintar de branco
     if sob == 1 and color == WHITE:
         #pega o index com base na posicao
         e = tab_possiveis.index((pos[0], pos[1]))
         #mais de uma peca na pos
-        if sum(players[player][1:] == e) > 1:                
+        if sum(players[player][1:] == e) > 1:
             pygame.draw.rect(backgound, data[player][0], [pos[0], pos[1], tam[0], tam[1]])
             return True
         # jogdor sai da base de outro
-        # jogador sai da base mas tem outra peca naquela pos        
+        # jogador sai da base mas tem outra peca naquela pos
         # verifica se pos e uma final
         if e in [x[1] for x in data]:
             #pega index do da pos final == qual jogador tem o fim
@@ -463,7 +463,7 @@ def paint(color, pos, tam, sob):
                     print(player_t, i, e, players[player_t][1:])
                     if i in players[player_t][1:]:
                         pygame.draw.rect(backgound, data[player_t][0], [pos[0], pos[1], tam[0], tam[1]])
-                        return True    
+                        return True
                 player_t += 1
     pygame.draw.rect(backgound, color, [pos[0], pos[1], tam[0], tam[1]])
 
@@ -508,9 +508,9 @@ def checkWin(isWin):
 
 def checkDown(dice):
     #Mover normalmente no tabuleiro e encontra uma peça de outro jogador -> derruba essa peça
-    #Pode ter uma peça de outro jogador na 1° posição de quando for liberar uma sua -> derruba tirando 1 ou 6 
+    #Pode ter uma peça de outro jogador na 1° posição de quando for liberar uma sua -> derruba tirando 1 ou 6
     #Levar em conta tmb que se tiver duas ou mais peças daquele jogador naquela posição tem que derrubar todas
-    
+
     #peca de teste do jogador atual
     e = 1
     while e < 5:
@@ -519,7 +519,7 @@ def checkDown(dice):
         #se estrapolar 51, recebe - 52, correcao do zero e da pos no tabuleiro
         if new_pos > 51:
             new_pos -= 52
-        
+
         # o check for diferente de ingame ou nova posicao for uma pos[0] de outro jogador ou a new_pos for maior que o fim do jogador
         if check[player][e] != -1 or new_pos > data[player][2]:
             e += 1
@@ -557,7 +557,7 @@ def checkDown(dice):
                                 pecas += 1
                             return True
                     player_t += 1
-                    
+
             if players[player][e] != -1:
 
                 #verifica peca + dado se derruba
@@ -577,7 +577,7 @@ def checkDown(dice):
                                 print("new_pos = ", new_pos)
                                 print("pos_t = ", pos_t)
                                 print("total_p = ", total_p)
-                                
+
                                 while pecas_t <= total_p:
                                     #se a peca esta em jogo ou seja check == -1
                                     #checa o player teste na pos[0] ou seja numeros [0][i-1] para correcao de uso de vetor
@@ -593,7 +593,7 @@ def checkDown(dice):
                                         #peca volta para base
                                         players[player_t][(pos_t[0][pecas_t-1] + 1)] = -1
                                         #jogador diminui peca in game
-                                        players[player_t][0] -= 1                                
+                                        players[player_t][0] -= 1
                                         #peca que derrubou vai pra nova pos
                                         players[player][e] = new_pos
                                     pecas_t += 1
@@ -630,7 +630,7 @@ while sair:
     #Maquina
     #else:
     text("NEXT", BLACK, [379, 169], 95)
-    
+
     for event in pygame.event.get():
         #print(event)
         #posicao do botao na tela
@@ -641,36 +641,36 @@ while sair:
                 #respota ao clique
 #                paint(RED,[370,169],[197,61], 0)
                 #apagar numero do dado anterior
-                paint(WHITE,[370,21],[197,146], 0)                
+                paint(WHITE,[370,21],[197,146], 0)
                 #Rolar o dado
-                dice = randint(1,6) 
-                
-                print(player + 1, dice)
+                dice = randint(1,6)
+
+                print("Jogador:", player + 1, "dado:", dice)
                 #imprimir dado na tela
-                
-#                checkBestmove(dice[cont], player, players, tabuleiro)
-                checkBestmove(dice, player, players, tabuleiro)
+
+#                checkBestmove(dice[cont], player, players)
+                checkBestmove(dice, player, players)
 
                 #valor do dado
                 #text(str(dice[cont]), BLACK,  [453,65], 100)
                 text(str(dice), BLACK,  [453,65], 100)
-                
+
                 player = checkPlayer(dice, player)
                 #player = checkPlayer(dice[cont], player)
-                
+
                 #proximo numero do vet dado
                 #cont += 1
                 if checkWin(check[player][0]):
                     print("GANHOUs")
-                
 
-        
+
+
         #quit the game
         if event.type == pygame.QUIT:
             sair = False
     #atualizar a tela
     pygame.display.update()
-    
+
 
 
 pygame.quit()
